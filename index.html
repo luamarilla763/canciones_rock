@@ -1,0 +1,575 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#090b0a">
+  <title>Rock Clásico — Archivo sonoro</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #090b0a;
+      --panel: #121614;
+      --panel-light: #1b211e;
+      --muted: #9aa49d;
+      --white: #f5f7f5;
+      --green: #b6f36b;
+      --line: rgba(255,255,255,.09);
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--white);
+      font: 15px/1.5 Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    button, input, select { font: inherit; }
+    a { color: inherit; text-decoration: none; }
+
+    .app-shell {
+      display: grid;
+      grid-template-columns: 238px minmax(0, 1fr);
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 0;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      padding: 28px 18px 20px;
+      background: #070908;
+      border-right: 1px solid var(--line);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 0 8px 38px;
+      font-size: 15px;
+      font-weight: 750;
+      letter-spacing: -.03em;
+    }
+
+    .brand-mark {
+      display: grid;
+      width: 37px;
+      height: 37px;
+      place-items: center;
+      border-radius: 12px;
+      background: var(--green);
+      color: #10150b;
+      font-size: 20px;
+    }
+
+    .nav-label {
+      margin: 0 10px 10px;
+      color: #79827c;
+      font-size: 10px;
+      font-weight: 750;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+    }
+
+    .nav-links { display: grid; gap: 5px; }
+
+    .nav-links a {
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      padding: 11px 12px;
+      border-radius: 9px;
+      color: #a7afa9;
+      font-size: 13px;
+      font-weight: 600;
+      transition: background .2s, color .2s;
+    }
+
+    .nav-links a:hover, .nav-links a.active {
+      background: #1b211e;
+      color: var(--white);
+    }
+
+    .nav-icon {
+      width: 18px;
+      color: var(--green);
+      font-size: 16px;
+      text-align: center;
+    }
+
+    .sidebar-note {
+      margin-top: auto;
+      padding: 15px;
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      background: #101311;
+    }
+
+    .sidebar-note strong { display: block; font-size: 12px; }
+    .sidebar-note span { color: var(--muted); font-size: 11px; }
+
+    main { min-width: 0; padding: 0 42px 60px; }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 74px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .breadcrumbs { color: var(--muted); font-size: 12px; }
+    .breadcrumbs strong { color: var(--white); font-weight: 600; }
+
+    .dataset-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: #b9c1bb;
+      font-size: 11px;
+    }
+
+    .dataset-badge::before {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--green);
+      content: "";
+      box-shadow: 0 0 12px rgba(182,243,107,.6);
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: flex-end;
+      min-height: 300px;
+      margin: 25px 0 30px;
+      padding: 38px;
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 20px;
+      background:
+        radial-gradient(ellipse at 79% 26%, rgba(181,242,105,.24), transparent 25%),
+        radial-gradient(ellipse at 91% 72%, rgba(201,86,52,.24), transparent 31%),
+        linear-gradient(115deg, #253329 0%, #17201a 41%, #171a17 100%);
+    }
+
+    .hero::after {
+      position: absolute;
+      top: -34px;
+      right: 7%;
+      color: rgba(255,255,255,.08);
+      content: "♫";
+      font-size: 290px;
+      line-height: 1;
+      transform: rotate(12deg);
+      pointer-events: none;
+    }
+
+    .hero-content { position: relative; z-index: 1; max-width: 600px; }
+
+    .eyebrow {
+      color: var(--green);
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 8px 0 10px;
+      font-size: clamp(36px, 5vw, 58px);
+      letter-spacing: -.065em;
+      line-height: 1.02;
+    }
+
+    .hero p { max-width: 480px; margin: 0; color: #c1c9c2; font-size: 13px; }
+
+    .hero-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 23px; }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 41px;
+      padding: 0 17px;
+      border: 1px solid rgba(255,255,255,.2);
+      border-radius: 999px;
+      background: transparent;
+      color: var(--white);
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 700;
+      transition: transform .18s, background .18s;
+    }
+
+    .button:hover { transform: translateY(-1px); background: rgba(255,255,255,.08); }
+    .button.primary { border-color: var(--green); background: var(--green); color: #12160e; }
+    .button.primary:hover { background: #c5ff7c; }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 13px;
+      margin-bottom: 35px;
+    }
+
+    .stat-card {
+      min-height: 109px;
+      padding: 17px 18px;
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      background: var(--panel);
+    }
+
+    .stat-label { color: var(--muted); font-size: 11px; }
+    .stat-value { display: block; margin-top: 7px; font-size: 24px; font-weight: 750; letter-spacing: -.045em; }
+    .stat-hint { color: #78827b; font-size: 10px; }
+
+    .section { scroll-margin-top: 22px; margin: 0 0 38px; }
+
+    .section-heading {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 15px;
+      margin-bottom: 15px;
+    }
+
+    .section-heading h2 { margin: 0; font-size: 20px; letter-spacing: -.04em; }
+    .section-heading p { margin: 4px 0 0; color: var(--muted); font-size: 11px; }
+    .section-link { color: var(--green); font-size: 11px; font-weight: 700; }
+
+    .content-card {
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      background: var(--panel);
+    }
+
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; text-align: left; }
+    thead { color: #77817a; font-size: 10px; text-transform: uppercase; letter-spacing: .08em; }
+    th { padding: 12px 16px; border-bottom: 1px solid var(--line); font-weight: 650; }
+    td { padding: 11px 16px; border-bottom: 1px solid rgba(255,255,255,.055); color: #c4cbc6; font-size: 12px; }
+    tbody tr:last-child td { border-bottom: 0; }
+    tbody tr:hover { background: rgba(255,255,255,.035); }
+    .rank { width: 35px; color: #838d86; }
+    .track-cell { display: flex; align-items: center; gap: 11px; min-width: 190px; }
+
+    .cover {
+      display: grid;
+      flex: 0 0 auto;
+      width: 35px;
+      height: 35px;
+      place-items: center;
+      border-radius: 7px;
+      background: linear-gradient(145deg, #364538, #a36638);
+      color: #f1e7cd;
+      font-size: 15px;
+    }
+
+    .track-title { display: block; color: var(--white); font-weight: 650; }
+    .track-artist { display: block; color: var(--muted); font-size: 10px; }
+    .genre-pill { display: inline-block; padding: 4px 8px; border-radius: 99px; background: #232a25; color: #c4cec5; font-size: 10px; white-space: nowrap; }
+    .plays { color: var(--green); font-weight: 700; white-space: nowrap; }
+
+    .charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+    .chart-card { min-width: 0; padding: 19px; }
+    .chart-title { margin: 0; font-size: 13px; font-weight: 700; }
+    .chart-caption { margin: 3px 0 20px; color: var(--muted); font-size: 10px; }
+    .bars { display: grid; gap: 14px; }
+    .bar-row { display: grid; grid-template-columns: minmax(72px, 105px) minmax(30px, 1fr) 42px; align-items: center; gap: 10px; }
+    .bar-label { overflow: hidden; color: #bdc5bf; font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }
+    .bar-track { overflow: hidden; height: 8px; border-radius: 9px; background: #29312b; }
+    .bar-fill { height: 100%; min-width: 3px; border-radius: inherit; background: linear-gradient(90deg, #8cca50, #c0f477); }
+    .song-bars .bar-fill { background: linear-gradient(90deg, #547b42, #b6f36b); }
+    .bar-value { color: #aab4ac; font-size: 10px; text-align: right; white-space: nowrap; }
+
+    .catalog-tools { display: flex; flex-wrap: wrap; gap: 9px; margin-bottom: 12px; }
+
+    .search-box, .filter-select {
+      min-height: 39px;
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      outline: none;
+      background: var(--panel);
+      color: var(--white);
+      font-size: 11px;
+    }
+
+    .search-box { flex: 1 1 220px; padding: 0 13px; }
+    .filter-select { min-width: 160px; padding: 0 11px; }
+    .search-box:focus, .filter-select:focus { border-color: rgba(182,243,107,.65); }
+    .empty-state { padding: 28px; color: var(--muted); text-align: center; font-size: 12px; }
+
+    footer { padding-top: 18px; border-top: 1px solid var(--line); color: #7f8982; font-size: 10px; }
+
+    @media (max-width: 1000px) {
+      main { padding-right: 25px; padding-left: 25px; }
+      .stats-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 720px) {
+      .app-shell { display: block; }
+      .sidebar { position: relative; height: auto; padding: 13px 15px; border-right: 0; border-bottom: 1px solid var(--line); }
+      .brand { margin: 0 4px 11px; }
+      .nav-label, .sidebar-note { display: none; }
+      .nav-links { display: flex; gap: 5px; overflow-x: auto; }
+      .nav-links a { flex: 0 0 auto; padding: 9px 11px; }
+      main { padding: 0 16px 40px; }
+      .topbar { min-height: 56px; }
+      .hero { min-height: 260px; margin-top: 18px; padding: 25px; }
+      .hero::after { top: 10px; right: -35px; font-size: 220px; }
+      .charts-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 440px) {
+      .stats-grid { gap: 8px; }
+      .stat-card { min-height: 96px; padding: 13px; }
+      .stat-value { font-size: 20px; }
+      .dataset-badge { font-size: 0; }
+      .section-heading { align-items: flex-start; }
+      .section-heading h2 { font-size: 18px; }
+      .bar-row { grid-template-columns: 82px minmax(20px, 1fr) 39px; gap: 7px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <a class="brand" href="#inicio">
+        <span class="brand-mark" aria-hidden="true">♫</span>
+        <span>ROCK <span style="color:var(--green)">ARCHIVE</span></span>
+      </a>
+      <p class="nav-label">Tu biblioteca</p>
+      <nav class="nav-links" aria-label="Navegación principal">
+        <a class="active" href="#inicio"><span class="nav-icon">⌂</span>Inicio</a>
+        <a href="#top"><span class="nav-icon">♫</span>Top canciones</a>
+        <a href="#generos"><span class="nav-icon">▥</span>Géneros</a>
+        <a href="#catalogo"><span class="nav-icon">⌕</span>Explorar canciones</a>
+      </nav>
+      <div class="sidebar-note">
+        <strong>Clásicos para siempre</strong>
+        <span>Un recorrido por la historia del rock.</span>
+      </div>
+    </aside>
+
+    <main>
+      <div class="topbar">
+        <div class="breadcrumbs">Biblioteca <span aria-hidden="true">/</span> <strong>Rock clásico</strong></div>
+        <div class="dataset-badge">Datos del proyecto</div>
+      </div>
+
+      <section class="hero" id="inicio">
+        <div class="hero-content">
+          <div class="eyebrow">Colección destacada · 1966 — 1991</div>
+          <h1>Rock que hizo<br>historia.</h1>
+          <p>Explorá canciones legendarias, descubrí los artistas más escuchados y compará reproducciones por género.</p>
+          <div class="hero-actions">
+            <a class="button primary" href="#top">♫ &nbsp; Ver el Top 5</a>
+            <a class="button" href="#generos">Explorar géneros</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="stats-grid" id="resumen" aria-label="Resumen estadístico"></section>
+
+      <section class="section" id="top">
+        <div class="section-heading">
+          <div>
+            <h2>Las más escuchadas</h2>
+            <p>Las cinco canciones con más reproducciones en la colección.</p>
+          </div>
+          <a class="section-link" href="#catalogo">Ver catálogo completo ↓</a>
+        </div>
+        <div class="content-card table-wrap">
+          <table>
+            <thead>
+              <tr><th>#</th><th>Canción</th><th>Género</th><th>Año</th><th>Reproducciones</th></tr>
+            </thead>
+            <tbody id="top-tracks"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="section" id="generos">
+        <div class="section-heading">
+          <div>
+            <h2>El sonido de cada género</h2>
+            <p>Reproducciones acumuladas por género musical.</p>
+          </div>
+          <span class="section-link">Millones de reproducciones</span>
+        </div>
+        <div class="charts-grid">
+          <div class="content-card chart-card">
+            <h3 class="chart-title">Reproducciones por género</h3>
+            <p class="chart-caption">Total acumulado en la colección</p>
+            <div class="bars" id="genre-chart"></div>
+          </div>
+          <div class="content-card chart-card">
+            <h3 class="chart-title">Top 10 canciones</h3>
+            <p class="chart-caption">Comparativa de las canciones más escuchadas</p>
+            <div class="bars song-bars" id="song-chart"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="catalogo">
+        <div class="section-heading">
+          <div>
+            <h2>Explorar canciones</h2>
+            <p id="catalog-count">Toda la colección, en un solo lugar.</p>
+          </div>
+        </div>
+        <div class="catalog-tools">
+          <input class="search-box" id="search" type="search" placeholder="Buscar canción o artista..." aria-label="Buscar canción o artista">
+          <select class="filter-select" id="genre-filter" aria-label="Filtrar por género">
+            <option value="">Todos los géneros</option>
+          </select>
+        </div>
+        <div class="content-card table-wrap">
+          <table>
+            <thead>
+              <tr><th>#</th><th>Canción</th><th>Género</th><th>Año</th><th>Duración</th><th>Reproducciones</th></tr>
+            </thead>
+            <tbody id="catalog-tracks"></tbody>
+          </table>
+          <div id="empty-state" class="empty-state" hidden>No hay canciones que coincidan con la búsqueda.</div>
+        </div>
+      </section>
+
+      <footer>Rock Archive · Análisis de canciones clásicas del rock · Datos del archivo canciones_rock.csv</footer>
+    </main>
+  </div>
+
+  <script>
+    const numberFormat = new Intl.NumberFormat("es-AR", { maximumFractionDigits: 1 });
+    const escapeHtml = (value) => String(value).replace(/[&<>"']/g, (character) => ({
+      "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+    })[character]);
+
+    function formatDuration(seconds) {
+      const minutes = Math.floor(seconds / 60);
+      const remainingSeconds = String(seconds % 60).padStart(2, "0");
+      return `${minutes}:${remainingSeconds}`;
+    }
+
+    function trackRow(song, index, includeDuration) {
+      return `<tr>
+        <td class="rank">${index + 1}</td>
+        <td><div class="track-cell"><span class="cover" aria-hidden="true">♫</span><span>
+          <span class="track-title">${escapeHtml(song.Titulo)}</span>
+          <span class="track-artist">${escapeHtml(song.Artista)}</span>
+        </span></div></td>
+        <td><span class="genre-pill">${escapeHtml(song.Genero)}</span></td>
+        <td>${escapeHtml(song["Año"])}</td>
+        ${includeDuration ? `<td>${formatDuration(song.Duracion_seg)}</td>` : ""}
+        <td class="plays">${numberFormat.format(song.Reproducciones_millones)} M</td>
+      </tr>`;
+    }
+
+    function renderStats(songs) {
+      const plays = songs.map((song) => song.Reproducciones_millones);
+      const total = plays.reduce((sum, value) => sum + value, 0);
+      const average = total / plays.length;
+      const highest = Math.max(...plays);
+      const overTwoBillion = plays.filter((value) => value > 2000).length;
+      const stats = [
+        ["Canciones", numberFormat.format(songs.length), "en la colección"],
+        ["Reproducciones", `${numberFormat.format(total / 1000)} B`, "miles de millones en total"],
+        ["Promedio por canción", `${numberFormat.format(average)} M`, "reproducciones"],
+        ["Más de 2.000 M", numberFormat.format(overTwoBillion), `récord: ${numberFormat.format(highest)} M`]
+      ];
+      document.querySelector("#resumen").innerHTML = stats.map(([label, value, hint]) =>
+        `<article class="stat-card"><span class="stat-label">${label}</span><strong class="stat-value">${value}</strong><span class="stat-hint">${hint}</span></article>`
+      ).join("");
+    }
+
+    function renderCharts(songs) {
+      const genreTotals = new Map();
+      songs.forEach((song) => {
+        genreTotals.set(song.Genero, (genreTotals.get(song.Genero) || 0) + song.Reproducciones_millones);
+      });
+
+      const genres = [...genreTotals.entries()].sort((a, b) => b[1] - a[1]);
+      const maxGenre = genres[0][1];
+      document.querySelector("#genre-chart").innerHTML = genres.map(([genre, total]) => `
+        <div class="bar-row">
+          <span class="bar-label" title="${escapeHtml(genre)}">${escapeHtml(genre)}</span>
+          <div class="bar-track"><div class="bar-fill" style="width:${(total / maxGenre) * 100}%"></div></div>
+          <span class="bar-value">${numberFormat.format(total)} M</span>
+        </div>`).join("");
+
+      const top10 = [...songs].sort((a, b) => b.Reproducciones_millones - a.Reproducciones_millones).slice(0, 10);
+      const maxPlays = top10[0].Reproducciones_millones;
+      document.querySelector("#song-chart").innerHTML = top10.map((song) => `
+        <div class="bar-row">
+          <span class="bar-label" title="${escapeHtml(song.Titulo)}">${escapeHtml(song.Titulo)}</span>
+          <div class="bar-track"><div class="bar-fill" style="width:${(song.Reproducciones_millones / maxPlays) * 100}%"></div></div>
+          <span class="bar-value">${numberFormat.format(song.Reproducciones_millones)}</span>
+        </div>`).join("");
+
+      genres.forEach(([genre]) => {
+        const option = document.createElement("option");
+        option.value = genre;
+        option.textContent = genre;
+        document.querySelector("#genre-filter").append(option);
+      });
+    }
+
+    function renderCatalog(songs) {
+      const query = document.querySelector("#search").value.trim().toLocaleLowerCase("es");
+      const genre = document.querySelector("#genre-filter").value;
+      const filtered = songs.filter((song) => {
+        const text = `${song.Titulo} ${song.Artista}`.toLocaleLowerCase("es");
+        return text.includes(query) && (!genre || song.Genero === genre);
+      });
+      document.querySelector("#catalog-count").textContent = `${filtered.length} de ${songs.length} canciones`;
+      document.querySelector("#catalog-tracks").innerHTML = filtered.map((song, index) => trackRow(song, index, true)).join("");
+      document.querySelector("#empty-state").hidden = filtered.length !== 0;
+    }
+
+    async function init() {
+      try {
+        const response = await fetch("/api/canciones");
+        if (!response.ok) throw new Error("No se pudieron cargar las canciones");
+        const data = await response.json();
+        const songs = data.map((song) => ({
+          ...song,
+          Duracion_seg: Number(song.Duracion_seg),
+          "Año": Number(song["Año"]),
+          Reproducciones_millones: Number(song.Reproducciones_millones)
+        })).filter((song) => Number.isFinite(song.Reproducciones_millones));
+        if (!songs.length) throw new Error("El archivo de canciones está vacío");
+
+        const sorted = [...songs].sort((a, b) => b.Reproducciones_millones - a.Reproducciones_millones);
+        document.querySelector("#top-tracks").innerHTML = sorted.slice(0, 5).map((song, index) => trackRow(song, index, false)).join("");
+        renderStats(songs);
+        renderCharts(songs);
+        renderCatalog(songs);
+        document.querySelector("#search").addEventListener("input", () => renderCatalog(songs));
+        document.querySelector("#genre-filter").addEventListener("change", () => renderCatalog(songs));
+
+        document.querySelectorAll(".nav-links a").forEach((link) => {
+          link.addEventListener("click", () => {
+            document.querySelectorAll(".nav-links a").forEach((item) => item.classList.remove("active"));
+            link.classList.add("active");
+          });
+        });
+      } catch (error) {
+        document.querySelector("#resumen").innerHTML = `<div class="content-card empty-state" style="grid-column:1/-1">${escapeHtml(error.message)}. Iniciá la aplicación con <code>python app.py</code>.</div>`;
+      }
+    }
+
+    init();
+  </script>
+</body>
+</html>
